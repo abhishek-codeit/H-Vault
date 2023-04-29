@@ -1,17 +1,15 @@
 import { create, globSource } from 'ipfs-http-client';
-
+import fs from "fs"
 const client = create();
-
 console.log(client.getEndpointConfig());
 
-// import { create, globSource } from 'ipfs'
 
-// const ipfs = await create()
+const f = fs.readFileSync("/home/hdoop/Desktop/New Folder 1/sample.txt")
 
-// for await (const file of ipfs.addAll(globSource('./docs', '**/*'))) {
-//   console.log(file)
-// }
+const file = await client.add(
+    {
+       content:f
+    });
 
 
-const file = await client.add('/home/hdoop/Desktop/New Folder 1/sample.txt');
-console.log(file);
+console.log(file)
