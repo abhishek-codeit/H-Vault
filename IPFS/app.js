@@ -3,13 +3,15 @@ import fs from "fs"
 const client = create();
 console.log(client.getEndpointConfig());
 
+//read the file from the path given
+const f = fs.readFileSync("ori income certificate-converted.pdf")
 
-const f = fs.readFileSync("/home/hdoop/Desktop/New Folder 1/sample.txt")
-
+// ipfs api to add the file into the ipfs 
 const file = await client.add(
     {
        content:f
     });
 
 
+//will print the cid, path and size of the file just uploaded to ipfs
 console.log(file)
