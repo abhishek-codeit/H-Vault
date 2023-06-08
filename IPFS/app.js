@@ -1,17 +1,17 @@
 import { create, globSource } from 'ipfs-http-client';
-import fs from "fs"
+
 const client = create();
+
 console.log(client.getEndpointConfig());
 
-//read the file from the path given
-const f = fs.readFileSync("ori income certificate-converted.pdf")
+// import { create, globSource } from 'ipfs'
 
-// ipfs api to add the file into the ipfs 
-const file = await client.add(
-    {
-       content:f
-    });
+// const ipfs = await create()
+
+// for await (const file of ipfs.addAll(globSource('./docs', '**/*'))) {
+//   console.log(file)
+// }
 
 
-//will print the cid, path and size of the file just uploaded to ipfs
-console.log(file)
+const file = await client.add('/home/hdoop/Documents/Mini Project/H-Vault/IPFS/sample.txt');
+console.log(file);

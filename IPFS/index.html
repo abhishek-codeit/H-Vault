@@ -1,25 +1,36 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <title>Bootstrap Example</title>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <script src="https://unpkg.com/ipfs-http-client/dist/index.min.js"></script>
-  <script src="app.js"></script>
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
-</head>
-<body>
-
-<div class="container">
-  <center>
-  <h2>Upload to IPFS</h2>
-  <input id="fileUpload" type="file" class="btn btn-primary">Select File</input>
-  <br /><br />
-  <div id="ipfs_hash"></div>
-  </center>
-</div>
-
-</body>
-</html>
+<html>  
+  <head>  
+    <title>File upload in Node.js by Javatpoint</title>  
+ <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>  
+  <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery.form/3.51/jquery.form.min.js"></script>  
+  <script>  
+  $(document).ready(function() {  
+     $('#uploadForm').submit(function() {  
+         $("#status").empty().text("File is uploading...");  
+  
+        $(this).ajaxSubmit({  
+  
+            error: function(xhr) {  
+                    status('Error: ' + xhr.status);  
+            },  
+  
+            success: function(response) {  
+                    console.log(response)  
+                    $("#status").empty().text(response);  
+            }  
+    });  
+  
+    return false;  
+    });      
+});  
+  </script>  
+  </head>  
+  <body>  
+      <h1>Express.js File Upload: by Javatpoint</h1>  
+      <form id="uploadForm" enctype="multipart/form-data" action="/uploadjavatpoint" method="post">  
+       <input type="file" name="myfile" /><br/><br/>  
+       <input type="submit" value="Upload Image" name="submit"><br/><br/>  
+       <span id="status"></span>  
+      </form>  
+  </body>  
+</html>  
