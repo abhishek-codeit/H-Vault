@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>View CIDs</title>
+  <script>
+    function viewCIDs() {
+      const response = {
+        "_id": "420",
+        "name": "chetan",
+        "lastname": "managavi",
+        "DOB": 0,
+        "bloodGroup": "O+",
+        "phone_number": 9999,
+        "email": "@fans",
+        "Gender": "dontknow",
+        "cidhash": {
+          "file": {
+            "cid": "fdsf",
+            "hash": "fsdfs"
+          },
+          "QmV7NxHSdu4jnn77j91e5uT9e3AStsGqgZmbi5cPuLrh8d": {
+            "cid": "QmV7NxHSdu4jnn77j91e5uT9e3AStsGqgZmbi5cPuLrh8d",
+            "hash": "randomhashfhowelnfsohewoowhlkf"
+          },
+          "QmX1v2hCUA54U7uQFTSwk2ggVZBrnYG6tqavPD98LPeY2C": {
+            "cid": "QmX1v2hCUA54U7uQFTSwk2ggVZBrnYG6tqavPD98LPeY2C",
+            "hash": "randomhashfhowelnfsohewoowhlkf"
+          }
+        },
+        "__v": 0
+      };
+
+      const cidhash = response.cidhash;
+      const cids = Object.values(cidhash).map(obj => obj.cid);
+
+      const cidsContainer = document.getElementById('cidsContainer');
+      cidsContainer.innerHTML = '';
+
+      cids.forEach(cid => {
+        const cidElement = document.createElement('p');
+        cidElement.textContent = cid;
+        cidElement.classList.add('cid-element');
+
+        cidElement.addEventListener('click', () => {
+          fetch(`https://ipfs.io/ipfs/${cid}`)
+            .then(response => response.text())
+            .then(text => {
+              const popupWindow = window.open('', 'CID Text File', 'width=600,height=400');
+              popupWindow.document.write('<pre>' + text + '</pre>');
+              popupWindow.document.close();
+
+              const downloadLink = popupWindow.document.createElement('a');
+              downloadLink.href = `data:text/plain;charset=utf-8,${encodeURIComponent(text)}`;
+              downloadLink.download = 'text_file.txt';
+              downloadLink.textContent = 'Download Text File';
+              popupWindow.document.body.appendChild(downloadLink);
+            })
+            .catch(error => {
+              console.error('Failed to retrieve IPFS text file:', error);
+            });
+        });
+
+        cidsContainer.appendChild(cidElement);
+      });
+    }
+  </script>
+</head>
+<body>
+  <button onclick="viewCIDs()">View CIDs</button>
+  <div id="cidsContainer"></div>
+</body>
+</html>

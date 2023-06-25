@@ -1,23 +1,47 @@
 {
-  "name": "new-folder-1",
-  "version": "1.0.0",
-  "description": "",
-  "main": "app.js",
-  "scripts": {
-    "dev": "nodemon dbserver.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "author": "abhishek",
-  "license": "ISC",
-  "type": "module",
-  "dependencies": {
-    "axios": "^1.4.0",
-    "circular-json": "^0.5.9",
-    "expres": "^0.0.5",
-    "express": "^4.18.2",
-    "ipfs-http-client": "^60.0.0",
-    "mongoose": "^7.2.3",
-    "node-fetch": "^3.3.1",
-    "nodemon": "^2.0.22"
-  }
+	"name": "h-vault",
+	"version": "0.0.1",
+	"private": true,
+	"scripts": {
+		"dev": "vite dev",
+		"build": "vite build",
+		"preview": "vite preview",
+		"lint": "prettier --plugin-search-dir . --check .",
+		"format": "prettier --plugin-search-dir . --write ."
+	},
+	"devDependencies": {
+		"@sveltejs/adapter-auto": "^2.0.0",
+		"@sveltejs/kit": "^1.5.0",
+		"autoprefixer": "^10.4.7",
+		"nodemon": "^2.0.22",
+		"postcss": "^8.4.14",
+		"postcss-load-config": "^4.0.1",
+		"prettier": "^2.8.0",
+		"prettier-plugin-svelte": "^2.8.1",
+		"svelte": "^3.54.0",
+		"svelte-preprocess": "^5.0.3",
+		"tailwindcss": "^3.1.5",
+		"vite": "^4.3.0"
+	},
+	"type": "module",
+	"dependencies": {
+		"@coral-xyz/borsh": "^0.27.0",
+		"@popperjs/core": "^2.11.7",
+		"@project-serum/anchor": "^0.26.0",
+		"@solana/wallet-adapter-phantom": "^0.9.22",
+		"@solana/wallet-adapter-react": "^0.15.32",
+		"@solana/web3.js": "^1.75.0",
+		"axios": "^1.4.0",
+		"buffer": "^6.0.3",
+		"circular-json": "^0.5.9",
+		"classnames": "^2.3.2",
+		"cors": "^2.8.5",
+		"express": "^4.18.2",
+		"express-fileupload": "^1.4.0",
+		"flowbite": "^1.6.5",
+		"flowbite-svelte": "^0.34.9",
+		"ipfs-http-client": "^60.0.1",
+		"mongoose": "^7.2.4",
+		"svelte-awesome": "^3.2.0"
+	}
 }
