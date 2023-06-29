@@ -32,37 +32,24 @@ const getCircularReplacer = () => {
   };
 };
 
-// async function insertIPFS(path) {
-
-//   //  read the file from the path given
-//   const f = fs.readFileSync(path);
-
-//   // ipfs api to add the file into the ipfs 
-//   const file = await client.add(
-//     {
-//       content: f
-//     });
-
-//   console.log(String(file.cid));
-//   const hash = 'randomhashfhowelnfsohewoowhlkf';
-//   const d = 838;
-//   return String(file.cid)
-//   // const patient = insert(d,firstName,lastName,DOB,bloodGroup,phoneNumber,email,gender,martialStatus,String(file.cid),"fsdfsd");
-//   // return patient._id;
-// }
 
 async function insertIPFS(req){
-  if (!req.files || Object.keys(req.files).length === 0) {
-    return res.status(400).send('No files were uploaded.');
-  }
+  // if (!req.files || Object.keys(req.files).length === 0) {
+  //   return res.status(400).send('No files were uploaded.');
+  // }
 
-  const file =await req.files.file;
+  console.log("what is this");
+  // const file =await req.files.file;
+  const file = await req.body.jsonfile;
+  console.log(file,"file");
 
   try {
-    const ipfsResponse = await client.add(file.data);
+    const ipfsResponse = await client.add({
+      path:file.name,
+      content:file
+    });
     await client.pin.add(ipfsResponse.cid);
     console.log('pinned successfully')
-    // console.log(String(file.cid));
     const ipfsHash = ipfsResponse.cid.toString();
     console.log(ipfsHash,ipfsResponse)
     
@@ -76,6 +63,7 @@ async function insertIPFS(req){
 app.post('/uploadnew', async (req, res) => {
   console.log('fs');
   var cid;
+  console.log(req.body);
   try{
     cid = await insertIPFS(req);
     console.log(req.body.pid);
@@ -88,11 +76,15 @@ app.post('/uploadnew', async (req, res) => {
   //TODO: need to call blockchain here and need to get hash from the file  */
   const hash = 'randomhashfhowelnfsohewoowhlkf';
   const pid = req.body.pid;
+  const name = req.body.name;
+  // const name = req.body.name;
   console.log(pid);
-  await updateOne(pid, cid, hash);
+  // await updateOne(pid, cid, hash,name);
+  await updateOne(pid,cid,hash,name);
   const response = {
     cid: cid,
     hash: hash,
+    name: name,
     db:"uploaded",
     status:"200 OK",
   }
@@ -132,10 +124,11 @@ app.post('/update', async (req, res) => {
   
   const pid = req.query['pid']
   const cid = req.query['cid']
+  const name = req.query['name']
   const hash = req.query['hash']
-  await updateOne(pid, cid, hash)
+  await updateOne(pid, cid, hash, name)
   res.send('done!')
-})
+}) 
 
 app.get('/getcids', async (req, res) => {
 

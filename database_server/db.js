@@ -100,10 +100,10 @@ export async function count() {
   const count = collection.countDocuments()
   return count
 }
-export async function updateOne(id, cid, hash) {
+export async function updateOne(id, cid, hash,name) {
   console.log('fsdf')
   const newData = {
-    [cid]: {
+    [name]: {
       cid: cid,
       hash: hash
     }

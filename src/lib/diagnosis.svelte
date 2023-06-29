@@ -17,11 +17,13 @@
         TableHeadCell,
         Textarea,
     } from "flowbite-svelte";
-
+    import {viewCIDs,fileUpload} from "$lib/ipfsfile.js";
     let defaultModal = false;
-
+    let data;
+    let cidhashKeys;
     let summary = "";
     let value = "";
+    let showTable = false;
     let showDiv2 = false;
     let showDiv3 = false;
     let blood_pressure,
@@ -33,7 +35,7 @@
         pulse,
         symptoms,
         temperature,
-        weight;
+        weight,file_name;
 
     function uploadFile() {
         const fileInput = document.getElementById("case_file");
@@ -61,7 +63,10 @@
             });
         defaultModal = true;
     }
-    function handleSearch() {
+    async function handleSearch() {
+        data = await viewCIDs(value);
+        cidhashKeys = data.cidhash ? Object.keys(data.cidhash):[]
+        console.log("cidhash", data.cidhash)
         if (value) {
             showDiv2 = true;
             showDiv3 = true;
@@ -70,6 +75,30 @@
             showDiv3 = false;
         }
     }
+
+    async function showFile(cid) {
+        try {
+            const response = await fetch(`https://ipfs.io/ipfs/${cid}`);
+            const text = await response.text();
+
+            const popupWindow = window.open('', 'CID Text File', 'width=600,height=400');
+            popupWindow.document.write('<pre>' + text + '</pre>');
+            popupWindow.document.close();
+
+            const downloadLink = popupWindow.document.createElement('a');
+            downloadLink.href = `data:text/plain;charset=utf-8,${encodeURIComponent(text)}`;
+            downloadLink.download = 'text_file.txt';
+            downloadLink.textContent = 'Download Text File';
+            popupWindow.document.body.appendChild(downloadLink);
+        } catch (error) {
+            console.error('Failed to retrieve IPFS text file:', error);
+        }
+}
+
+function handleButtonClick(cid) {
+  showFile(cid);
+}
+
     function encodeData() {
         const height = document.getElementById("height").value;
         const weight = document.getElementById("weight").value;
@@ -81,6 +110,7 @@
         const diagnosis = document.getElementById("diagnosis").value;
         const medicine = document.getElementById("medicine").value;
         const dosage = document.getElementById("dosage").value;
+        const file_name = document.getElementById("file_name").value;
         let diagObject = {
             Height: height,
             Weight: weight,
@@ -92,10 +122,18 @@
             Diagnosis: diagnosis,
             Medicine: medicine,
             Dosage: dosage,
+            pid: value,
+            name: file_name,
         };
+        fileUpload(diagObject);
         console.log(diagObject);
     }
+
+    function handleClick(){
+        showTable = !showTable;
+    }
 </script>
+
 
 <!-- SEARCH BAR FOR SEARCHING PID -->
 <div>
@@ -118,22 +156,27 @@
             <TableBody class="divide-y">
                 <TableBodyRow>
                     <TableBodyCell>PID</TableBodyCell>
-                    <TableBodyCell>1</TableBodyCell>
+                    <TableBodyCell>{data._id}</TableBodyCell>
                 </TableBodyRow>
 
                 <TableBodyRow>
                     <TableBodyCell>Name</TableBodyCell>
-                    <TableBodyCell>Abhishek</TableBodyCell>
+                    <TableBodyCell>{data.name}</TableBodyCell>
                 </TableBodyRow>
 
                 <TableBodyRow>
                     <TableBodyCell>DOB</TableBodyCell>
-                    <TableBodyCell>01-Nov</TableBodyCell>
+                    <TableBodyCell>{data.DOB}</TableBodyCell>
                 </TableBodyRow>
 
                 <TableBodyRow>
                     <TableBodyCell>Blood Group</TableBodyCell>
-                    <TableBodyCell>B -ve</TableBodyCell>
+                    <TableBodyCell>{data.bloodGroup}</TableBodyCell>
+                </TableBodyRow>
+
+                <TableBodyRow>
+                    <TableBodyCell>Gender</TableBodyCell>
+                    <TableBodyCell>{data.Gender}</TableBodyCell>
                 </TableBodyRow>
 
                 <TableBodyRow>
@@ -142,11 +185,40 @@
                 </TableBodyRow>
             </TableBody>
         </Table>
+        <button class="button" on:click={handleClick}>Show File</button>
+<Table>
+        {#if showTable && cidhashKeys.length == 0}
+        <div>
+            <h1 class="text-8xl">No Records Found :(</h1>
+        </div>
+        {/if}
+        {#if showTable && cidhashKeys.length > 0}
+        <TableHead>
+            <TableHeadCell>File Name:
+           </TableHeadCell>
+             <TableHeadCell>
+                Hash
+            </TableHeadCell>
+        </TableHead>
+        <TableBody>
+
+        {#each cidhashKeys as key}
+            <TableBodyRow>
+                <TableBodyCell>{key}</TableBodyCell>
+                <!-- <TableBodyCell>{data.cidhash[key].cid}</TableBodyCell> -->
+                <TableBodyCell>{data.cidhash[key].hash}</TableBodyCell>
+                <button class="button" on:click={() => showFile(data.cidhash[key].cid)}>Show File</button>
+            </TableBodyRow>
+            {/each}
+            
+        </TableBody>
+        {/if}
+</Table>
     </div>
 {/if}
 
 {#if showDiv3}
-    <Label for="case_file" class="pb-2">Upload file</Label>
+    <!-- <Label for="case_file" class="pb-2">Upload file</Label>
     <Fileupload id="case_file" class="mb-2" />
     <Button pill outline on:click={uploadFile}>Generate Summary</Button>
     <Helper>Only .txt file is accepted</Helper>
@@ -156,7 +228,7 @@
         on:close={() => (defaultModal = false)}
     >
         {summary}
-    </Modal>
+    </Modal> -->
 
     <form>
         <div class="grid gap-6 mb-6 md:grid-cols-2">
@@ -257,6 +329,16 @@
                     placeholder="Dosage"
                 />
             </div>
+            <!-- Name of file -->
+            <div>
+                <Label for="file_name" class="mb-2">FileName</Label>
+                <Input
+                    type="text"
+                    id="file_name"
+                    bind:file_name
+                    placeholder="file_name"
+                />
+            </div>
         </div>
         <Button
             pill
@@ -269,4 +351,17 @@
 {/if}
 
 <style>
+    .button {
+        padding: 12px 20px;
+        font-size: 16px;
+        border-radius: 4px;
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        cursor: pointer;
+    }
+
+    .button:hover {
+        background-color: #45a049;
+    }
 </style>
